@@ -9,9 +9,14 @@ async fn main() {
     println!("Server listening on 127.0.0.1:8080");
     
     // Main loop to continuously accept incoming TCP connections
-    while let Ok((_stream, addr)) = listener.accept().await {
+    while let Ok((stream, addr)) = listener.accept().await {
         println!("Accepted connection from: {}", addr);
-        // For now, we just accept the connection
-        // In future steps, we'll handle the connection in a separate task
+        
+        // Spawn a new task to handle the connection concurrently
+        tokio::spawn(async move {
+            println!("Handling connection from: {}", addr);
+            // For now, we'll just print a message
+            // In future steps, we'll add actual HTTP request/response handling here
+        });
     }
 }

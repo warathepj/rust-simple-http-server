@@ -1,20 +1,27 @@
+use tokio::io::AsyncReadExt;
+
 #[tokio::main]
 async fn main() {
     // Create an asynchronous TCP listener bound to 127.0.0.1:8080
     let listener = tokio::net::TcpListener::bind("127.0.0.1:8080")
         .await
         .expect("Failed to bind to address 127.0.0.1:8080");
-    
+
     // Confirm the server is running
     println!("Server listening on 127.0.0.1:8080");
-    
+
     // Main loop to continuously accept incoming TCP connections
-    while let Ok((stream, addr)) = listener.accept().await {
+    while let Ok((mut stream, addr)) = listener.accept().await {
         println!("Accepted connection from: {}", addr);
-        
+
         // Spawn a new task to handle the connection concurrently
         tokio::spawn(async move {
             println!("Handling connection from: {}", addr);
+            let mut buffer = [0; 1024];
+            stream
+                .read(&mut buffer)
+                .await
+                .expect("Failed to read from stream");
             // For now, we'll just print a message
             // In future steps, we'll add actual HTTP request/response handling here
         });
